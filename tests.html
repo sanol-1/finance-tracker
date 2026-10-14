@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validator tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 1rem auto; padding: 0 1rem; color: #16242e; }
+    li { padding: .2rem 0; }
+    .pass::before { content: "PASS "; color: #0b5d4b; font-weight: 700; }
+    .fail::before { content: "FAIL "; color: #8a3b00; font-weight: 700; }
+    #summary { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Validator tests</h1>
+  <p id="summary" role="status"></p>
+  <ul id="results"></ul>
+
+  <script type="module">
+    import {
+      validateDescription, validateAmount, validateDate, validateCategory,
+      findDuplicateWord, collapseSpaces, validateRecord,
+    } from './scripts/validators.js';
+
+    const out = document.getElementById('results');
+    let passed = 0, failed = 0;
+    function check(name, actual, expected) {
+      const ok = actual === expected;
+      ok ? passed++ : failed++;
+      const li = document.createElement('li');
+      li.className = ok ? 'pass' : 'fail';
+      li.textContent = ok ? name : `${name} (expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)})`;
+      out.appendChild(li);
+    }
+    const valid = (msg) => msg === '';
+
+    // Description
+    check('description: normal text is valid', valid(validateDescription('Lunch at cafeteria')), true);
+    check('description: leading space rejected', valid(validateDescription(' Lunch')), false);
+    check('description: trailing space rejected', valid(validateDescription('Lunch ')), false);
+    check('description: empty rejected', valid(validateDescription('')), false);
+    check('description: single character valid', valid(validateDescription('A')), true);
+    // Advanced: back-reference
+    check('advanced: finds repeated word', findDuplicateWord('Bought the the book'), 'the');
+    check('advanced: repeat is case-insensitive', findDuplicateWord('Tea tea'), 'Tea');
+    check('advanced: no repeat returns null', findDuplicateWord('Bus pass'), null);
+    check('advanced: repeated word fails validation', valid(validateDescription('Coffee coffee')), false);
+    check('collapse: double spaces become one', collapseSpaces('Bus   pass'), 'Bus pass');
+
+    // Amount
+    check('amount: 12.50 valid', valid(validateAmount('12.50')), true);
+    check('amount: 0 valid', valid(validateAmount('0')), true);
+    check('amount: 0.5 valid', valid(validateAmount('0.5')), true);
+    check('amount: 007 rejected', valid(validateAmount('007')), false);
+    check('amount: 12.345 rejected', valid(validateAmount('12.345')), false);
+    check('amount: -5 rejected', valid(validateAmount('-5')), false);
+    check('amount: letters rejected', valid(validateAmount('12a')), false);
+    check('amount: huge number valid', valid(validateAmount('99999999.99')), true);
+
+    // Date
+    check('date: 2025-09-29 valid', valid(validateDate('2025-09-29')), true);
+    check('date: leap day valid', valid(validateDate('2024-02-29')), true);
+    check('date: non-leap Feb 29 rejected', valid(validateDate('2025-02-29')), false);
+    check('date: month 13 rejected', valid(validateDate('2025-13-01')), false);
+    check('date: wrong format rejected', valid(validateDate('29/09/2025')), false);
+    check('date: Apr 31 rejected', valid(validateDate('2025-04-31')), false);
+
+    // Category
+    check('category: Food valid', valid(validateCategory('Food')), true);
+    check('category: two words valid', valid(validateCategory('Study Material')), true);
+    check('category: hyphen valid', valid(validateCategory('Part-time')), true);
+    check('category: digits rejected', valid(validateCategory('Food2')), false);
+    check('category: double space rejected', valid(validateCategory('Study  Material')), false);
+    check('category: trailing hyphen rejected', valid(validateCategory('Food-')), false);
+
+    // Whole record
+    const good = { description: 'Bus pass', amount: '45.00', category: 'Transport', date: '2025-09-20' };
+    check('record: good record has no errors', Object.keys(validateRecord(good)).length, 0);
+    check('record: bad record reports each bad field',
+      Object.keys(validateRecord({ description: ' x', amount: 'a', category: '1', date: 'z' })).length, 4);
+
+    document.getElementById('summary').textContent =
+      `${passed} passed, ${failed} failed (${passed + failed} total)`;
+  </script>
+</body>
+</html>
