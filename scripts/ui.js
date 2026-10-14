@@ -3,9 +3,13 @@
 const $ = (id) => document.getElementById(id);
 
 // Announce a message in the global role="status" region.
-export function announce(message) {
-  const el = $('status');
-  el.textContent = '';
+// urgent=true uses the assertive role="alert" region (for failures).
+export function announce(message, urgent = false) {
+  const polite = $('status');
+  const alert = $('alert');
+  polite.textContent = '';
+  alert.textContent = '';
+  const el = urgent ? alert : polite;
   // Tiny delay so screen readers re-announce identical messages.
   setTimeout(() => { el.textContent = message; }, 30);
 }
@@ -98,4 +102,11 @@ export function renderCap(status, base = '') {
   else assertive = `Over your cap by ${money(status.amount)}!`;
   setText('cap-message', polite);
   setText('cap-alert', assertive);
+}
+
+// ---------- M6: conversions ----------
+export function renderConversions(items) {
+  $('conv').textContent = items.length
+    ? 'Total in other currencies: ' + items.map((i) => `${i.total.toFixed(2)} ${i.code}`).join(' \u00b7 ')
+    : '';
 }

@@ -21,8 +21,9 @@
     import {
       validateDescription, validateAmount, validateDate, validateCategory,
       findDuplicateWord, collapseSpaces, validateRecord,
+      validateImportData, validateSettingsForm, validateRecordShape, validateSettingsObject,
     } from './scripts/validators.js';
-    import { computeStats, last7Days, capStatus } from './scripts/stats.js';
+    import { computeStats, last7Days, capStatus, convertTotals } from './scripts/stats.js';
 
     const out = document.getElementById('results');
     let passed = 0, failed = 0;
@@ -105,6 +106,37 @@
     check('cap: exact', capStatus(50, 50).state, 'exact');
     check('cap: over', capStatus(60.5, 50).amount, 10.5);
     check('cap: float safe', capStatus(0.1 + 0.2, 0.3).state, 'exact');
+
+    // Import / export validation
+    const rec = { id: 'txn_0001', description: 'Lunch', amount: 12.5, category: 'Food', date: '2025-09-25',
+                  createdAt: '2025-09-25T08:00:00.000Z', updatedAt: '2025-09-25T08:00:00.000Z' };
+    check('import: bare array accepted', validateImportData([rec]).ok, true);
+    check('import: {records} object accepted', validateImportData({ records: [rec] }).ok, true);
+    check('import: not-a-list rejected', validateImportData({ foo: 1 }).ok, false);
+    check('import: null rejected', validateImportData(null).ok, false);
+    check('import: bad date rejected', validateImportData([{ ...rec, date: '2025-02-30' }]).ok, false);
+    check('import: negative amount rejected', validateImportData([{ ...rec, amount: -1 }]).ok, false);
+    check('import: 3 decimals rejected', validateRecordShape({ ...rec, amount: 1.234 }) !== '', true);
+    check('import: string amount rejected', validateRecordShape({ ...rec, amount: '5' }) !== '', true);
+    check('import: bad id rejected', validateRecordShape({ ...rec, id: 'abc' }) !== '', true);
+    check('import: duplicate ids rejected', validateImportData([rec, { ...rec }]).ok, false);
+    check('import: padded description rejected', validateRecordShape({ ...rec, description: ' x' }) !== '', true);
+    check('import: missing timestamps rejected', validateRecordShape({ ...rec, createdAt: undefined }) !== '', true);
+    check('import: extra fields stripped', 'evil' in validateImportData([{ ...rec, evil: 1 }]).records[0], false);
+    check('import: one bad record rejects whole file', validateImportData([rec, { ...rec, id: 'txn_0002', amount: 'x' }]).ok, false);
+    // Settings
+    const goodSettings = { baseCurrency: 'USD', currencies: [{ code: 'EUR', rate: 0.92 }, { code: 'RWF', rate: 1450 }],
+                           categories: ['Food', 'Books'], cap: null };
+    check('settings: valid object accepted', validateSettingsObject(goodSettings).ok, true);
+    check('settings: zero rate rejected', validateSettingsObject({ ...goodSettings, currencies: [{ code: 'EUR', rate: 0 }, { code: 'RWF', rate: 1 }] }).ok, false);
+    check('settings: duplicate currency rejected', validateSettingsObject({ ...goodSettings, currencies: [{ code: 'USD', rate: 1 }, { code: 'RWF', rate: 1 }] }).ok, false);
+    const form = { baseCurrency: 'USD', cur2: 'EUR', rate2: '0.92', cur3: 'RWF', rate3: '1450', categories: 'Food, Books' };
+    check('settings form: valid has no errors', Object.keys(validateSettingsForm(form)).length, 0);
+    check('settings form: lowercase code rejected', 'cur2' in validateSettingsForm({ ...form, cur2: 'eur' }), true);
+    check('settings form: rate 0 rejected', 'rate2' in validateSettingsForm({ ...form, rate2: '0' }), true);
+    check('settings form: digit in category rejected', 'categories' in validateSettingsForm({ ...form, categories: 'Food, B00ks' }), true);
+    check('settings form: duplicate categories rejected', 'categories' in validateSettingsForm({ ...form, categories: 'Food, food' }), true);
+    check('convert: 100 USD in EUR', convertTotals(100, [{ code: 'EUR', rate: 0.92 }])[0].total, 92);
 
     document.getElementById('summary').textContent =
       `${passed} passed, ${failed} failed (${passed + failed} total)`;

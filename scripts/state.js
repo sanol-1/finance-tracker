@@ -42,7 +42,14 @@ const SORTERS = {
 
 export const sortRecords = (list, key) => [...list].sort(SORTERS[key] || SORTERS['date-desc']);
 
-// ---------- settings (persistence added in M6) ----------
-let settings = { cap: null };
+// ---------- settings ----------
+export const DEFAULT_SETTINGS = {
+  cap: null,
+  baseCurrency: 'USD',
+  currencies: [{ code: 'EUR', rate: 0.92 }, { code: 'RWF', rate: 1450 }], // 1 base = rate of that currency
+  categories: ['Food', 'Books', 'Transport', 'Entertainment', 'Fees', 'Other'],
+};
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 export const getSettings = () => settings;
+export const setSettings = (next) => { settings = { ...settings, ...next }; };
 export const setCap = (value) => { settings = { ...settings, cap: value === '' ? null : Number(value) }; };

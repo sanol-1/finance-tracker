@@ -147,3 +147,8 @@ td.num { font-variant-numeric: tabular-nums; }
 .trend .bar { width: 100%; background: var(--accent); min-height: 0; border-radius: 3px 3px 0 0; transition: height .5s ease; }
 .trend .val, .trend .lbl { font-size: .75rem; text-align: center; color: var(--muted); min-height: 1rem; }
 .cap:empty { display: none; }
+
+/* ---------- M6 ---------- */
+.muted { color: var(--muted); margin: 0 0 .75rem; }
+#import-file:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+#alert:empty { display: none; }

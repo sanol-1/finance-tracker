@@ -26,6 +26,7 @@
   <main id="main" tabindex="-1">
     <!-- Global status region: announces saves, imports, errors -->
     <p id="status" class="status" role="status" aria-live="polite"></p>
+    <p id="alert" class="status error" role="alert"></p>
 
     <section id="about" aria-labelledby="about-h">
       <h2 id="about-h">About</h2>
@@ -40,6 +41,7 @@
         <div class="stat"><dt>Total spent</dt><dd id="stat-sum">0.00</dd></div>
         <div class="stat"><dt>Top category</dt><dd id="stat-top">None yet</dd></div>
       </dl>
+      <p id="conv" class="muted"></p>
       <p id="cap-message" class="cap" aria-live="polite"></p>
       <p id="cap-alert" class="cap over" role="alert" aria-live="assertive"></p>
       <figure>
@@ -123,42 +125,49 @@
       <h2 id="set-h">Settings</h2>
       <div class="settings-grid">
         <fieldset>
-          <legend>Currency</legend>
+          <legend>Currency (manual rates)</legend>
           <div class="field">
             <label for="base-currency">Base currency</label>
-            <input id="base-currency" type="text" maxlength="3" value="USD">
+            <input id="base-currency" type="text" maxlength="3" autocomplete="off" aria-describedby="base-currency-err">
+            <p id="base-currency-err" class="error"></p>
           </div>
           <div class="field">
             <label for="cur2">Second currency</label>
-            <input id="cur2" type="text" maxlength="3" value="EUR">
-            <label for="rate2">Rate (1 base = ?)</label>
-            <input id="rate2" type="text" inputmode="decimal" value="0.92">
+            <input id="cur2" type="text" maxlength="3" autocomplete="off" aria-describedby="cur2-err">
+            <p id="cur2-err" class="error"></p>
+            <label for="rate2">Rate (1 base = ? second)</label>
+            <input id="rate2" type="text" inputmode="decimal" aria-describedby="rate2-err">
+            <p id="rate2-err" class="error"></p>
           </div>
           <div class="field">
             <label for="cur3">Third currency</label>
-            <input id="cur3" type="text" maxlength="3" value="RWF">
-            <label for="rate3">Rate (1 base = ?)</label>
-            <input id="rate3" type="text" inputmode="decimal" value="1450">
+            <input id="cur3" type="text" maxlength="3" autocomplete="off" aria-describedby="cur3-err">
+            <p id="cur3-err" class="error"></p>
+            <label for="rate3">Rate (1 base = ? third)</label>
+            <input id="rate3" type="text" inputmode="decimal" aria-describedby="rate3-err">
+            <p id="rate3-err" class="error"></p>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Spending cap</legend>
+          <legend>Cap and categories</legend>
           <div class="field">
-            <label for="cap">Cap (base currency)</label>
+            <label for="cap">Spending cap (base currency)</label>
             <input id="cap" type="text" inputmode="decimal" placeholder="200" aria-describedby="cap-err">
             <p id="cap-err" class="error"></p>
           </div>
           <div class="field">
             <label for="categories">Categories (comma separated)</label>
-            <input id="categories" type="text" value="Food, Books, Transport, Entertainment, Fees, Other">
+            <input id="categories" type="text" aria-describedby="categories-err">
+            <p id="categories-err" class="error"></p>
           </div>
         </fieldset>
         <fieldset>
           <legend>Data</legend>
+          <p class="muted">Changes save automatically in this browser.</p>
           <div class="actions">
             <button type="button" id="export-btn" class="btn">Export JSON</button>
+            <input id="import-file" type="file" accept="application/json,.json" class="visually-hidden">
             <label class="btn" for="import-file">Import JSON</label>
-            <input id="import-file" type="file" accept="application/json" class="visually-hidden">
           </div>
         </fieldset>
       </div>

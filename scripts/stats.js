@@ -49,3 +49,7 @@ export function capStatus(total, cap) {
   if (diff === 0) return { state: 'exact', amount: 0 };
   return { state: 'over', amount: round2(-diff) };
 }
+
+// Convert a base-currency total into the other currencies (manual rates).
+export const convertTotals = (sum, currencies) =>
+  currencies.map((c) => ({ code: c.code, total: round2(sum * c.rate) }));
