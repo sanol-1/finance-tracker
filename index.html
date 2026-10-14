@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Finance Tracker</title>
+  <link rel="stylesheet" href="styles/styles.css">
+  <script type="module" src="scripts/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <h1>Student Finance Tracker</h1>
+    <nav aria-label="Main">
+      <ul class="nav-list">
+        <li><a href="#about">About</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#records">Records</a></li>
+        <li><a href="#form">Add / Edit</a></li>
+        <li><a href="#settings">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- Global status region: announces saves, imports, errors -->
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <section id="about" aria-labelledby="about-h">
+      <h2 id="about-h">About</h2>
+      <p>Track what you spend as a student: log transactions, search them with regular expressions, and stay under a spending cap. Your data stays in this browser.</p>
+      <p>Contact: <a href="https://github.com/sanol-1">GitHub: sanol-1</a> &middot; <a href="mailto:l.mpakasano@alustudent.com">l.mpakasano@alustudent.com</a></p>
+    </section>
+
+    <section id="dashboard" aria-labelledby="dash-h">
+      <h2 id="dash-h">Dashboard</h2>
+      <dl class="stats">
+        <div class="stat"><dt>Total records</dt><dd id="stat-count">0</dd></div>
+        <div class="stat"><dt>Total spent</dt><dd id="stat-sum">0.00</dd></div>
+        <div class="stat"><dt>Top category</dt><dd id="stat-top">None yet</dd></div>
+      </dl>
+      <p id="cap-message" class="cap" aria-live="polite"></p>
+      <figure>
+        <figcaption>Spending in the last 7 days</figcaption>
+        <div id="trend" class="trend" role="img" aria-label="Bar chart of spending over the last 7 days"></div>
+      </figure>
+    </section>
+
+    <section id="records" aria-labelledby="rec-h">
+      <h2 id="rec-h">Records</h2>
+      <div class="toolbar">
+        <div class="field">
+          <label for="search">Search (regex)</label>
+          <input id="search" type="text" placeholder="e.g. (coffee|tea)" autocomplete="off">
+          <p id="search-error" class="error" role="alert"></p>
+        </div>
+        <label class="check"><input id="case-toggle" type="checkbox" checked> Ignore case</label>
+        <div class="field">
+          <label for="sort">Sort by</label>
+          <select id="sort">
+            <option value="date-desc">Date (newest)</option>
+            <option value="date-asc">Date (oldest)</option>
+            <option value="desc-asc">Description (A to Z)</option>
+            <option value="desc-desc">Description (Z to A)</option>
+            <option value="amount-asc">Amount (low to high)</option>
+            <option value="amount-desc">Amount (high to low)</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="records-table">
+          <caption class="visually-hidden">Your transactions</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col" class="num">Amount</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="records-body"></tbody>
+        </table>
+      </div>
+      <p id="empty-msg" class="empty" hidden>No records yet. Add your first transaction in the form below.</p>
+    </section>
+
+    <section id="form" aria-labelledby="form-h">
+      <h2 id="form-h">Add or edit a transaction</h2>
+      <form id="record-form" novalidate>
+        <input type="hidden" id="rec-id">
+        <div class="field">
+          <label for="description">Description</label>
+          <input id="description" name="description" type="text" required aria-describedby="description-err">
+          <p id="description-err" class="error"></p>
+        </div>
+        <div class="field">
+          <label for="amount">Amount</label>
+          <input id="amount" name="amount" type="text" inputmode="decimal" required aria-describedby="amount-err">
+          <p id="amount-err" class="error"></p>
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <input id="category" name="category" type="text" list="category-list" required aria-describedby="category-err">
+          <datalist id="category-list"></datalist>
+          <p id="category-err" class="error"></p>
+        </div>
+        <div class="field">
+          <label for="date">Date (YYYY-MM-DD)</label>
+          <input id="date" name="date" type="text" inputmode="numeric" placeholder="2025-09-29" required aria-describedby="date-err">
+          <p id="date-err" class="error"></p>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary">Save record</button>
+          <button type="reset" class="btn">Clear form</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="settings" aria-labelledby="set-h">
+      <h2 id="set-h">Settings</h2>
+      <div class="settings-grid">
+        <fieldset>
+          <legend>Currency</legend>
+          <div class="field">
+            <label for="base-currency">Base currency</label>
+            <input id="base-currency" type="text" maxlength="3" value="USD">
+          </div>
+          <div class="field">
+            <label for="cur2">Second currency</label>
+            <input id="cur2" type="text" maxlength="3" value="EUR">
+            <label for="rate2">Rate (1 base = ?)</label>
+            <input id="rate2" type="text" inputmode="decimal" value="0.92">
+          </div>
+          <div class="field">
+            <label for="cur3">Third currency</label>
+            <input id="cur3" type="text" maxlength="3" value="RWF">
+            <label for="rate3">Rate (1 base = ?)</label>
+            <input id="rate3" type="text" inputmode="decimal" value="1450">
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Spending cap</legend>
+          <div class="field">
+            <label for="cap">Cap (base currency)</label>
+            <input id="cap" type="text" inputmode="decimal" placeholder="200">
+          </div>
+          <div class="field">
+            <label for="categories">Categories (comma separated)</label>
+            <input id="categories" type="text" value="Food, Books, Transport, Entertainment, Fees, Other">
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Data</legend>
+          <div class="actions">
+            <button type="button" id="export-btn" class="btn">Export JSON</button>
+            <label class="btn" for="import-file">Import JSON</label>
+            <input id="import-file" type="file" accept="application/json" class="visually-hidden">
+          </div>
+        </fieldset>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Student Finance Tracker &middot; built with plain HTML, CSS and JavaScript.</p>
+  </footer>
+</body>
+</html>
