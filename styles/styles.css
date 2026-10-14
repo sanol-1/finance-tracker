@@ -139,3 +139,11 @@ td.num { font-variant-numeric: tabular-nums; }
   td.row-actions { display: table-cell; white-space: nowrap; }
   td.row-actions .btn { margin-right: .4rem; }
 }
+
+/* ---------- M5: trend chart ---------- */
+.trend { align-items: stretch; height: 10rem; border-bottom: 0; }
+.trend .day { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.trend .bar-area { flex: 1; display: flex; align-items: flex-end; border-bottom: 1px solid var(--line); }
+.trend .bar { width: 100%; background: var(--accent); min-height: 0; border-radius: 3px 3px 0 0; transition: height .5s ease; }
+.trend .val, .trend .lbl { font-size: .75rem; text-align: center; color: var(--muted); min-height: 1rem; }
+.cap:empty { display: none; }

@@ -2,8 +2,10 @@ import {
   validateDescription, validateAmount, validateCategory, validateDate,
   validateRecord, collapseSpaces,
 } from './validators.js';
-import { announce, showFieldError, clearErrors, fillCategories, renderRecords, setSearchError, fillForm } from './ui.js';
-import { getRecords, setRecords, addRecord, updateRecord, deleteRecord, sortRecords } from './state.js';
+import { announce, showFieldError, clearErrors, fillCategories, renderRecords, setSearchError, fillForm, renderStats, renderCap } from './ui.js';
+import { getRecords, setRecords, addRecord, updateRecord, deleteRecord, sortRecords, getSettings, setCap } from './state.js';
+import { computeStats, last7Days, capStatus } from './stats.js';
+import { validateAmount as validateCapValue } from './validators.js';
 import { compileRegex, filterRecords } from './search.js';
 
 const DEFAULT_CATEGORIES = ['Food', 'Books', 'Transport', 'Entertainment', 'Fees', 'Other'];
@@ -22,6 +24,22 @@ function refresh() {
   renderRecords(visible, re, lastChangedId);
   lastChangedId = null;
 }
+
+// Stats always cover ALL records (not just the filtered ones).
+function refreshStats() {
+  const all = getRecords();
+  const stats = computeStats(all);
+  renderStats(stats, last7Days(all));
+  renderCap(capStatus(stats.sum, getSettings().cap));
+}
+
+// ---------- Cap setting ----------
+$('cap').addEventListener('input', () => {
+  const v = $('cap').value.trim();
+  const err = v === '' ? '' : validateCapValue(v);
+  showFieldError('cap', err);
+  if (!err) { setCap(v); refreshStats(); }
+});
 
 // ---------- Form ----------
 FIELDS.forEach((name) => {
@@ -55,6 +73,7 @@ form.addEventListener('submit', (event) => {
   form.reset();
   $('rec-id').value = '';
   refresh();
+  refreshStats();
 });
 
 form.addEventListener('reset', () => { clearErrors(FIELDS); $('rec-id').value = ''; });
@@ -72,6 +91,7 @@ $('records-body').addEventListener('click', (event) => {
     deleteRecord(id);
     announce('Record deleted.');
     refresh();
+    refreshStats();
   }
 });
 
@@ -88,4 +108,4 @@ fetch('seed.json')
   .then((r) => r.json())
   .then(setRecords)
   .catch(() => announce('Could not load sample data.'))
-  .finally(refresh);
+  .finally(() => { refresh(); refreshStats(); });

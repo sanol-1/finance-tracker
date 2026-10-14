@@ -65,3 +65,37 @@ export function fillForm(r) {
   $('amount').value = String(r.amount);
   $('description').focus();
 }
+
+// ---------- M5: stats, trend chart, cap ----------
+export function renderStats(stats, days, base = '') {
+  $('stat-count').textContent = stats.count;
+  $('stat-sum').textContent = `${stats.sum.toFixed(2)} ${base}`.trim();
+  $('stat-top').textContent = stats.top ? `${stats.top.category} (${stats.top.total.toFixed(2)})` : 'None yet';
+
+  const max = Math.max(...days.map((d) => d.total), 0);
+  $('trend').setAttribute('aria-label',
+    'Spending in the last 7 days: ' + days.map((d) => `${d.label} ${d.total.toFixed(2)}`).join(', '));
+  $('trend').innerHTML = days.map((d) => `
+    <div class="day">
+      <span class="val">${d.total ? d.total.toFixed(0) : ''}</span>
+      <div class="bar-area"><div class="bar" data-h="${max ? Math.max((d.total / max) * 100, d.total ? 4 : 0) : 0}" style="height:0"></div></div>
+      <span class="lbl">${d.label}</span>
+    </div>`).join('');
+  // Next frame: set heights so the CSS transition animates the bars growing.
+  requestAnimationFrame(() => document.querySelectorAll('#trend .bar')
+    .forEach((b) => { b.style.height = b.dataset.h + '%'; }));
+}
+
+// Polite region when under the cap, assertive region when over. Only write on change.
+function setText(id, text) { if ($(id).textContent !== text) $(id).textContent = text; }
+
+export function renderCap(status, base = '') {
+  const money = (n) => `${n.toFixed(2)} ${base}`.trim();
+  let polite = '', assertive = '';
+  if (status.state === 'none') polite = 'No spending cap set. You can set one in Settings.';
+  else if (status.state === 'under') polite = `${money(status.amount)} remaining under your cap.`;
+  else if (status.state === 'exact') polite = 'You have reached your cap exactly.';
+  else assertive = `Over your cap by ${money(status.amount)}!`;
+  setText('cap-message', polite);
+  setText('cap-alert', assertive);
+}

@@ -41,3 +41,8 @@ const SORTERS = {
 };
 
 export const sortRecords = (list, key) => [...list].sort(SORTERS[key] || SORTERS['date-desc']);
+
+// ---------- settings (persistence added in M6) ----------
+let settings = { cap: null };
+export const getSettings = () => settings;
+export const setCap = (value) => { settings = { ...settings, cap: value === '' ? null : Number(value) }; };

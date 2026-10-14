@@ -22,6 +22,7 @@
       validateDescription, validateAmount, validateDate, validateCategory,
       findDuplicateWord, collapseSpaces, validateRecord,
     } from './scripts/validators.js';
+    import { computeStats, last7Days, capStatus } from './scripts/stats.js';
 
     const out = document.getElementById('results');
     let passed = 0, failed = 0;
@@ -79,6 +80,31 @@
     check('record: good record has no errors', Object.keys(validateRecord(good)).length, 0);
     check('record: bad record reports each bad field',
       Object.keys(validateRecord({ description: ' x', amount: 'a', category: '1', date: 'z' })).length, 4);
+
+    // Stats
+    const sample = [
+      { amount: 10, category: 'Food', date: '2025-09-29' },
+      { amount: 5.5, category: 'Food', date: '2025-09-29' },
+      { amount: 20, category: 'Books', date: '2025-09-25' },
+    ];
+    const st = computeStats(sample);
+    check('stats: count', st.count, 3);
+    check('stats: sum rounds correctly', st.sum, 35.5);
+    check('stats: top category by amount', st.top.category, 'Books');
+    check('stats: empty list has no top', computeStats([]).top, null);
+    const days = last7Days(sample, new Date(2025, 8, 29));
+    check('trend: 7 days', days.length, 7);
+    check('trend: last day total', days[6].total, 15.5);
+    check('trend: day 4 before is 25th', days[4].date, '2025-09-27');
+    check('trend: 25th is inside window with 20', days[2].total, 20);
+    check('trend: record before window ignored',
+      last7Days([{ amount: 99, category: 'X', date: '2025-09-22' }], new Date(2025, 8, 29)).every((d) => d.total === 0), true);
+    // Cap
+    check('cap: none when empty', capStatus(10, null).state, 'none');
+    check('cap: under', capStatus(10, 50).amount, 40);
+    check('cap: exact', capStatus(50, 50).state, 'exact');
+    check('cap: over', capStatus(60.5, 50).amount, 10.5);
+    check('cap: float safe', capStatus(0.1 + 0.2, 0.3).state, 'exact');
 
     document.getElementById('summary').textContent =
       `${passed} passed, ${failed} failed (${passed + failed} total)`;

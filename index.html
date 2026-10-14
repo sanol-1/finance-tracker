@@ -41,6 +41,7 @@
         <div class="stat"><dt>Top category</dt><dd id="stat-top">None yet</dd></div>
       </dl>
       <p id="cap-message" class="cap" aria-live="polite"></p>
+      <p id="cap-alert" class="cap over" role="alert" aria-live="assertive"></p>
       <figure>
         <figcaption>Spending in the last 7 days</figcaption>
         <div id="trend" class="trend" role="img" aria-label="Bar chart of spending over the last 7 days"></div>
@@ -144,7 +145,8 @@
           <legend>Spending cap</legend>
           <div class="field">
             <label for="cap">Cap (base currency)</label>
-            <input id="cap" type="text" inputmode="decimal" placeholder="200">
+            <input id="cap" type="text" inputmode="decimal" placeholder="200" aria-describedby="cap-err">
+            <p id="cap-err" class="error"></p>
           </div>
           <div class="field">
             <label for="categories">Categories (comma separated)</label>
