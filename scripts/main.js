@@ -2,48 +2,90 @@ import {
   validateDescription, validateAmount, validateCategory, validateDate,
   validateRecord, collapseSpaces,
 } from './validators.js';
-import { announce, showFieldError, clearErrors, fillCategories } from './ui.js';
+import { announce, showFieldError, clearErrors, fillCategories, renderRecords, setSearchError, fillForm } from './ui.js';
+import { getRecords, setRecords, addRecord, updateRecord, deleteRecord, sortRecords } from './state.js';
+import { compileRegex, filterRecords } from './search.js';
 
 const DEFAULT_CATEGORIES = ['Food', 'Books', 'Transport', 'Entertainment', 'Fees', 'Other'];
 const FIELDS = ['description', 'amount', 'category', 'date'];
-const checkers = {
-  description: validateDescription,
-  amount: validateAmount,
-  category: validateCategory,
-  date: validateDate,
-};
+const checkers = { description: validateDescription, amount: validateAmount, category: validateCategory, date: validateDate };
 
-const form = document.getElementById('record-form');
-const input = (name) => document.getElementById(name);
+const $ = (id) => document.getElementById(id);
+const form = $('record-form');
+let lastChangedId = null;
 
-fillCategories(DEFAULT_CATEGORIES);
+// ---------- Render pipeline: search -> sort -> draw ----------
+function refresh() {
+  const { re, error } = compileRegex($('search').value, $('case-toggle').checked);
+  setSearchError(error);
+  const visible = sortRecords(filterRecords(getRecords(), re), $('sort').value);
+  renderRecords(visible, re, lastChangedId);
+  lastChangedId = null;
+}
 
-// Validate a single field when the user leaves it.
+// ---------- Form ----------
 FIELDS.forEach((name) => {
-  input(name).addEventListener('blur', () => {
-    const el = input(name);
-    if (name === 'description') el.value = collapseSpaces(el.value); // collapse doubles
-    if (el.value === '') return; // required errors show on submit
+  $(name).addEventListener('blur', () => {
+    const el = $(name);
+    if (name === 'description') el.value = collapseSpaces(el.value);
+    if (el.value === '') return;
     showFieldError(name, checkers[name](el.value));
   });
 });
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const values = Object.fromEntries(FIELDS.map((f) => [f, input(f).value]));
+  const values = Object.fromEntries(FIELDS.map((f) => [f, $(f).value]));
   values.description = collapseSpaces(values.description);
-  input('description').value = values.description;
+  $('description').value = values.description;
 
   const errors = validateRecord(values);
   FIELDS.forEach((f) => showFieldError(f, errors[f] || ''));
-
   const firstBad = FIELDS.find((f) => errors[f]);
   if (firstBad) {
-    input(firstBad).focus(); // keyboard users land on the first problem
+    $(firstBad).focus();
     announce(`Please fix ${Object.keys(errors).length} field(s) before saving.`);
     return;
   }
-  announce('All fields are valid. Saving is added in the next milestone.');
+
+  const id = $('rec-id').value;
+  const rec = id ? updateRecord(id, values) : addRecord(values);
+  lastChangedId = rec.id;
+  announce(id ? 'Record updated.' : 'Record added.');
+  form.reset();
+  $('rec-id').value = '';
+  refresh();
 });
 
-form.addEventListener('reset', () => clearErrors(FIELDS));
+form.addEventListener('reset', () => { clearErrors(FIELDS); $('rec-id').value = ''; });
+
+// ---------- Table actions (event delegation) ----------
+$('records-body').addEventListener('click', (event) => {
+  const btn = event.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = btn.closest('tr').dataset.id;
+  const rec = getRecords().find((r) => r.id === id);
+  if (btn.dataset.action === 'edit') {
+    fillForm(rec);
+    announce(`Editing "${rec.description}". Change the fields and save.`);
+  } else if (confirm(`Delete "${rec.description}"?`)) {
+    deleteRecord(id);
+    announce('Record deleted.');
+    refresh();
+  }
+});
+
+// ---------- Search + sort ----------
+['input', 'change'].forEach((evt) => {
+  $('search').addEventListener(evt, refresh);
+  $('case-toggle').addEventListener(evt, refresh);
+  $('sort').addEventListener(evt, refresh);
+});
+
+// ---------- Startup (localStorage replaces this in M6) ----------
+fillCategories(DEFAULT_CATEGORIES);
+fetch('seed.json')
+  .then((r) => r.json())
+  .then(setRecords)
+  .catch(() => announce('Could not load sample data.'))
+  .finally(refresh);

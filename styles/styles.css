@@ -131,3 +131,11 @@ td.num { font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ---------- M4: row actions ---------- */
+.row-actions { gap: .4rem; flex-wrap: wrap; }
+.row-actions .btn { padding: .35rem .75rem; min-height: 2.5rem; }
+@media (min-width: 768px) {
+  td.row-actions { display: table-cell; white-space: nowrap; }
+  td.row-actions .btn { margin-right: .4rem; }
+}
