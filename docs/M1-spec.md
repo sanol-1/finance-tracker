@@ -48,7 +48,7 @@ Desktop (1024px): 12-column grid. About (4 cols) beside Dashboard (8 cols); Reco
 - Every input has a bound `<label>`; errors linked with `aria-describedby` and `aria-invalid`.
 - `role="status"` for save/import messages; cap message is `aria-live` polite when under the cap and assertive when over.
 - Visible 3px focus ring on every interactive element; touch targets at least 44px tall.
-- Colour contrast: body text 15:1, accent 7.9:1, warning 7.2:1 on white (all above WCAG AA 4.5:1).
+- Colour contrast (measured, light theme): body text 15.8:1, accent 7.8:1, warning 7.8:1 on white (all above WCAG AA 4.5:1).
 - Motion: short transitions only, disabled under `prefers-reduced-motion`.
 - Keyboard-only flow: Tab through nav, search, sort, table actions, form, settings. Enter submits the form; Esc cancels an inline edit.
 

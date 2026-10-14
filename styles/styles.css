@@ -9,6 +9,7 @@
   --accent-ink: #ffffff;
   --warn: #8a3b00;        /* over-cap / errors, 7.2:1 on white */
   --focus: #b45f00;
+  --flash: #fff3c4;
   --radius: 6px;
   --space: 1rem;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -16,7 +17,7 @@
 }
 :root[data-theme="dark"] {
   --ink: #e8eef1; --muted: #a9bac3; --paper: #0f1a20; --surface: #17262e;
-  --line: #2c4049; --accent: #5fd0b3; --accent-ink: #06231c; --warn: #ffb26b; --focus: #ffd08a;
+  --line: #2c4049; --accent: #5fd0b3; --accent-ink: #06231c; --warn: #ffb26b; --focus: #ffd08a; --flash: #3d3a14;
 }
 
 /* ---------- Base (mobile first, ~360px) ---------- */
@@ -91,7 +92,7 @@ legend { font-weight: 700; padding: 0 .4rem; }
 table { width: 100%; border-collapse: collapse; }
 thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } /* hidden visually, kept for screen readers */
 tbody tr { display: block; border: 1px solid var(--line); border-radius: var(--radius); padding: .6rem; margin-bottom: .6rem; transition: background-color .6s ease; }
-tbody tr.flash { background: #fff3c4; }
+tbody tr.flash { background: var(--flash); }
 td { display: flex; justify-content: space-between; gap: 1rem; padding: .2rem 0; }
 td::before { content: attr(data-label); font-weight: 600; color: var(--muted); }
 td.num { font-variant-numeric: tabular-nums; }
@@ -152,3 +153,15 @@ td.num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--muted); margin: 0 0 .75rem; }
 #import-file:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
 #alert:empty { display: none; }
+
+/* ---------- M7: inline edit, header, focus ---------- */
+main:focus { outline: none; }
+.site-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.site-header h1 { margin: 0; }
+.site-header nav { order: 3; width: 100%; }
+@media (min-width: 768px) { .site-header nav { order: 0; width: auto; } }
+input.cell { width: 100%; min-width: 0; font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--muted); border-radius: var(--radius); padding: .35rem .5rem; min-height: 2.5rem; }
+td input.cell { flex: 1; }
+td.num input.cell { text-align: right; }
+input.cell[aria-invalid="true"] { border-color: var(--warn); border-width: 2px; }
+tbody tr.editing { background: var(--paper); }

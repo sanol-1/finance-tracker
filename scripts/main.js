@@ -4,7 +4,7 @@ import {
 } from './validators.js';
 import {
   announce, showFieldError, clearErrors, fillCategories, renderRecords, setSearchError,
-  fillForm, renderStats, renderCap, renderConversions,
+  renderStats, renderCap, renderConversions,
 } from './ui.js';
 import {
   getRecords, setRecords, addRecord, updateRecord, deleteRecord, sortRecords,
@@ -12,6 +12,7 @@ import {
 } from './state.js';
 import { computeStats, last7Days, capStatus, convertTotals } from './stats.js';
 import { compileRegex, filterRecords } from './search.js';
+import { initTheme } from './theme.js';
 import { loadRecords, saveRecords, loadSettings, saveSettings, exportJSON } from './storage.js';
 
 const $ = (id) => document.getElementById(id);
@@ -20,6 +21,7 @@ const SETTING_FIELDS = ['base-currency', 'cur2', 'rate2', 'cur3', 'rate3', 'cate
 const checkers = { description: validateDescription, amount: validateAmount, category: validateCategory, date: validateDate };
 const form = $('record-form');
 let lastChangedId = null;
+let editingId = null;
 
 // ---------- Persistence: auto-save after every change ----------
 function persist() {
@@ -35,7 +37,8 @@ function refresh() {
   const { re, error } = compileRegex($('search').value, $('case-toggle').checked);
   setSearchError(error);
   const visible = sortRecords(filterRecords(getRecords(), re), $('sort').value);
-  renderRecords(visible, re, lastChangedId);
+  if (editingId && !visible.some((r) => r.id === editingId)) editingId = null; // row filtered out
+  renderRecords(visible, re, lastChangedId, editingId);
   lastChangedId = null;
 }
 
@@ -131,33 +134,92 @@ form.addEventListener('submit', (event) => {
     return;
   }
 
-  const id = $('rec-id').value;
-  const rec = id ? updateRecord(id, values) : addRecord(values);
+  const rec = addRecord(values);
   lastChangedId = rec.id;
   form.reset();
-  $('rec-id').value = '';
   refresh();
   refreshStats();
-  saved(id ? 'Record updated.' : 'Record added.');
+  saved('Record added.');
+  $('description').focus(); // ready for the next entry
 });
 
-form.addEventListener('reset', () => { clearErrors(FIELDS); $('rec-id').value = ''; });
+form.addEventListener('reset', () => clearErrors(FIELDS));
 
 // ---------- Table actions (event delegation) ----------
+const rowOf = (id) => $('records-body').querySelector(`tr[data-id="${id}"]`);
+const focusRowButton = (id, action) => rowOf(id)?.querySelector(`button[data-action="${action}"]`)?.focus();
+
+function startEdit(id) {
+  const rec = getRecords().find((r) => r.id === id);
+  editingId = id;
+  refresh();
+  rowOf(id).querySelector('input').focus();
+  announce(`Editing "${rec.description}". Press Enter to save or Escape to cancel.`);
+}
+
+function cancelEdit() {
+  const id = editingId;
+  editingId = null;
+  refresh();
+  focusRowButton(id, 'edit');
+  announce('Edit cancelled.');
+}
+
+function saveEdit() {
+  const row = rowOf(editingId);
+  const inputs = [...row.querySelectorAll('input.cell')];
+  const values = Object.fromEntries(inputs.map((i) => [i.dataset.field, i.value]));
+  values.description = collapseSpaces(values.description);
+  const errors = validateRecord(values);
+  inputs.forEach((i) => {
+    if (errors[i.dataset.field]) i.setAttribute('aria-invalid', 'true');
+    else i.removeAttribute('aria-invalid');
+  });
+  const firstBad = inputs.find((i) => errors[i.dataset.field]);
+  if (firstBad) {
+    firstBad.focus();
+    announce(`${firstBad.getAttribute('aria-label')}: ${errors[firstBad.dataset.field]}`, true);
+    return;
+  }
+  const id = editingId;
+  updateRecord(id, values);
+  editingId = null;
+  lastChangedId = id;
+  refresh();
+  refreshStats();
+  focusRowButton(id, 'edit');
+  saved('Record updated.');
+}
+
 $('records-body').addEventListener('click', (event) => {
   const btn = event.target.closest('button[data-action]');
   if (!btn) return;
   const id = btn.closest('tr').dataset.id;
-  const rec = getRecords().find((r) => r.id === id);
-  if (btn.dataset.action === 'edit') {
-    fillForm(rec);
-    announce(`Editing "${rec.description}". Change the fields and save.`);
-  } else if (confirm(`Delete "${rec.description}"?`)) {
+  const action = btn.dataset.action;
+  if (action === 'edit') startEdit(id);
+  else if (action === 'save') saveEdit();
+  else if (action === 'cancel') cancelEdit();
+  else {
+    const rec = getRecords().find((r) => r.id === id);
+    if (!confirm(`Delete "${rec.description}"?`)) return;
+    const rows = [...$('records-body').querySelectorAll('tr')];
+    const index = rows.findIndex((tr) => tr.dataset.id === id);
     deleteRecord(id);
+    if (editingId === id) editingId = null;
     refresh();
     refreshStats();
     saved('Record deleted.');
+    // Keep keyboard focus useful: move to the neighbouring row, or to search when empty.
+    const next = $('records-body').querySelectorAll('tr')[Math.min(index, rows.length - 2)];
+    if (next) next.querySelector('button[data-action="edit"]').focus();
+    else $('search').focus();
   }
+});
+
+$('records-body').addEventListener('keydown', (event) => {
+  if (!event.target.matches('input.cell')) return;
+  if (event.key === 'Enter') { event.preventDefault(); saveEdit(); }
+  else if (event.key === 'Escape') { event.preventDefault(); cancelEdit(); }
 });
 
 // ---------- Search + sort ----------
@@ -223,4 +285,5 @@ async function start() {
   fillSettingsForm();
   refreshAll();
 }
+initTheme($('theme-toggle'));
 start();

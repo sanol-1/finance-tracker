@@ -35,13 +35,18 @@ export function fillCategories(categories) {
 // ---------- M4: rendering ----------
 import { highlight } from './search.js';
 
-export function renderRecords(list, re, flashId = null) {
+export function renderRecords(list, re, flashId = null, editingId = null) {
   const body = $('records-body');
   $('empty-msg').hidden = list.length > 0;
   $('empty-msg').textContent = re
     ? 'No records match that pattern.'
-    : 'No records yet. Add your first transaction in the form below.';
-  body.innerHTML = list.map((r) => `
+    : 'No records yet. Add your first transaction in the form above.';
+  body.innerHTML = list.map((r) => (r.id === editingId ? editRow(r) : viewRow(r, re, flashId))).join('');
+  if (flashId) setTimeout(() => body.querySelector('.flash')?.classList.remove('flash'), 50);
+}
+
+function viewRow(r, re, flashId) {
+  return `
     <tr data-id="${r.id}"${r.id === flashId ? ' class="flash"' : ''}>
       <td data-label="Date">${highlight(r.date, re)}</td>
       <td data-label="Description">${highlight(r.description, re)}</td>
@@ -51,8 +56,23 @@ export function renderRecords(list, re, flashId = null) {
         <button type="button" class="btn" data-action="edit" aria-label="Edit ${escapeAttr(r.description)}">Edit</button>
         <button type="button" class="btn danger" data-action="delete" aria-label="Delete ${escapeAttr(r.description)}">Delete</button>
       </td>
-    </tr>`).join('');
-  if (flashId) setTimeout(() => body.querySelector('.flash')?.classList.remove('flash'), 50);
+    </tr>`;
+}
+
+// Inline edit: Enter saves, Escape cancels (handled in main.js).
+function editRow(r) {
+  const v = escapeAttr;
+  return `
+    <tr data-id="${r.id}" class="editing">
+      <td data-label="Date"><input class="cell" data-field="date" type="text" inputmode="numeric" aria-label="Date, YYYY-MM-DD" value="${v(r.date)}"></td>
+      <td data-label="Description"><input class="cell" data-field="description" type="text" aria-label="Description" value="${v(r.description)}"></td>
+      <td data-label="Category"><input class="cell" data-field="category" type="text" list="category-list" aria-label="Category" value="${v(r.category)}"></td>
+      <td data-label="Amount" class="num"><input class="cell" data-field="amount" type="text" inputmode="decimal" aria-label="Amount" value="${v(r.amount)}"></td>
+      <td data-label="Actions" class="row-actions">
+        <button type="button" class="btn primary" data-action="save">Save</button>
+        <button type="button" class="btn" data-action="cancel">Cancel</button>
+      </td>
+    </tr>`;
 }
 
 const escapeAttr = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -63,12 +83,6 @@ export function setSearchError(message) {
   else $('search').removeAttribute('aria-invalid');
 }
 
-export function fillForm(r) {
-  $('rec-id').value = r.id;
-  ['description', 'category', 'date'].forEach((f) => { $(f).value = r[f]; });
-  $('amount').value = String(r.amount);
-  $('description').focus();
-}
 
 // ---------- M5: stats, trend chart, cap ----------
 export function renderStats(stats, days, base = '') {
