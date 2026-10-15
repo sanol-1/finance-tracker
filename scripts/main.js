@@ -23,7 +23,6 @@ const form = $('record-form');
 let lastChangedId = null;
 let editingId = null;
 
-// ---------- Persistence: auto-save after every change ----------
 function persist() {
   return saveRecords(getRecords()) && saveSettings(getSettings());
 }
@@ -32,17 +31,15 @@ function saved(message) {
   else announce(`${message} Warning: this browser blocked saving, so changes will be lost on refresh.`, true);
 }
 
-// ---------- Render pipeline ----------
 function refresh() {
   const { re, error } = compileRegex($('search').value, $('case-toggle').checked);
   setSearchError(error);
   const visible = sortRecords(filterRecords(getRecords(), re), $('sort').value);
-  if (editingId && !visible.some((r) => r.id === editingId)) editingId = null; // row filtered out
+  if (editingId && !visible.some((r) => r.id === editingId)) editingId = null; 
   renderRecords(visible, re, lastChangedId, editingId);
   lastChangedId = null;
 }
 
-// Stats always cover ALL records (not just the filtered ones).
 function refreshStats() {
   const all = getRecords();
   const { baseCurrency, currencies, cap } = getSettings();
@@ -58,7 +55,6 @@ function refreshAll() {
   refreshStats();
 }
 
-// ---------- Settings form ----------
 function fillSettingsForm() {
   const s = getSettings();
   $('base-currency').value = s.baseCurrency;
@@ -109,7 +105,7 @@ $('cap').addEventListener('input', () => {
   if (!err) { setCap(v); refreshStats(); persist(); }
 });
 
-// ---------- Record form ----------
+
 FIELDS.forEach((name) => {
   $(name).addEventListener('blur', () => {
     const el = $(name);
@@ -140,12 +136,11 @@ form.addEventListener('submit', (event) => {
   refresh();
   refreshStats();
   saved('Record added.');
-  $('description').focus(); // ready for the next entry
+  $('description').focus(); 
 });
 
 form.addEventListener('reset', () => clearErrors(FIELDS));
 
-// ---------- Table actions (event delegation) ----------
 const rowOf = (id) => $('records-body').querySelector(`tr[data-id="${id}"]`);
 const focusRowButton = (id, action) => rowOf(id)?.querySelector(`button[data-action="${action}"]`)?.focus();
 
@@ -209,7 +204,6 @@ $('records-body').addEventListener('click', (event) => {
     refresh();
     refreshStats();
     saved('Record deleted.');
-    // Keep keyboard focus useful: move to the neighbouring row, or to search when empty.
     const next = $('records-body').querySelectorAll('tr')[Math.min(index, rows.length - 2)];
     if (next) next.querySelector('button[data-action="edit"]').focus();
     else $('search').focus();
@@ -222,14 +216,12 @@ $('records-body').addEventListener('keydown', (event) => {
   else if (event.key === 'Escape') { event.preventDefault(); cancelEdit(); }
 });
 
-// ---------- Search + sort ----------
 ['input', 'change'].forEach((evt) => {
   $('search').addEventListener(evt, refresh);
   $('case-toggle').addEventListener(evt, refresh);
   $('sort').addEventListener(evt, refresh);
 });
 
-// ---------- Import / export ----------
 $('export-btn').addEventListener('click', () => {
   exportJSON(getRecords(), getSettings());
   announce(`Exported ${getRecords().length} records.`);
@@ -252,11 +244,10 @@ $('import-file').addEventListener('change', async (event) => {
   } catch {
     announce('Import failed: that file is not valid JSON. Nothing was changed.', true);
   } finally {
-    event.target.value = ''; // allow re-importing the same file
+    event.target.value = ''; 
   }
 });
 
-// ---------- Startup: saved data first, seed.json only on the very first visit ----------
 async function start() {
   const storedSettings = loadSettings();
   if (storedSettings) {
