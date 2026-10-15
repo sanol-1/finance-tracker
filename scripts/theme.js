@@ -1,4 +1,3 @@
-// theme.js: light/dark toggle, remembered in localStorage (falls back to the OS setting).
 const KEY = 'app:theme';
 
 function stored() {
