@@ -1,8 +1,6 @@
-// stats.js: pure functions (no DOM) so they are easy to test.
 
 export const round2 = (n) => Math.round(n * 100) / 100;
 
-// Local calendar date as YYYY-MM-DD (toISOString would shift by timezone).
 export function toISODate(d) {
   const p = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
@@ -23,7 +21,6 @@ export function computeStats(records) {
   };
 }
 
-// Spending per day for the 7 days ending on `today` (oldest first).
 export function last7Days(records, today = new Date()) {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -41,7 +38,6 @@ export function last7Days(records, today = new Date()) {
   return days;
 }
 
-// state: 'none' | 'under' | 'exact' | 'over'
 export function capStatus(total, cap) {
   if (cap === null || cap === undefined || cap === '') return { state: 'none' };
   const diff = round2(Number(cap) - total);
@@ -50,6 +46,5 @@ export function capStatus(total, cap) {
   return { state: 'over', amount: round2(-diff) };
 }
 
-// Convert a base-currency total into the other currencies (manual rates).
 export const convertTotals = (sum, currencies) =>
   currencies.map((c) => ({ code: c.code, total: round2(sum * c.rate) }));
