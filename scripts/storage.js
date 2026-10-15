@@ -1,4 +1,3 @@
-// storage.js: localStorage + JSON export. Every call is wrapped: storage can be blocked or full.
 
 const DATA_KEY = 'app:data';
 const SETTINGS_KEY = 'app:settings';
@@ -21,7 +20,7 @@ function write(key, value) {
   }
 }
 
-export const loadRecords = () => read(DATA_KEY);      // null when nothing saved yet
+export const loadRecords = () => read(DATA_KEY);
 export const saveRecords = (list) => write(DATA_KEY, list);
 export const loadSettings = () => read(SETTINGS_KEY);
 export const saveSettings = (s) => write(SETTINGS_KEY, s);
