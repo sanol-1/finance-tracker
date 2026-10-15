@@ -1,4 +1,3 @@
-// state.js: the single source of truth for records. (Persistence is added in M6.)
 
 let records = [];
 
@@ -42,11 +41,10 @@ const SORTERS = {
 
 export const sortRecords = (list, key) => [...list].sort(SORTERS[key] || SORTERS['date-desc']);
 
-// ---------- settings ----------
 export const DEFAULT_SETTINGS = {
   cap: null,
   baseCurrency: 'USD',
-  currencies: [{ code: 'EUR', rate: 0.92 }, { code: 'RWF', rate: 1450 }], // 1 base = rate of that currency
+  currencies: [{ code: 'EUR', rate: 0.92 }, { code: 'RWF', rate: 1450 }], 
   categories: ['Food', 'Books', 'Transport', 'Entertainment', 'Fees', 'Other'],
 };
 let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
