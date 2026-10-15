@@ -1,0 +1,7 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnSave": false,
+  "files.eol": "\n",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.root": "/"
+}

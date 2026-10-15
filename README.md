@@ -85,6 +85,8 @@ python3 -m http.server 8000
 # then open http://localhost:8000/
 ```
 
+**In VS Code:** open the `finance-tracker` folder, install the recommended **Live Server** extension, right-click `index.html` and choose "Open with Live Server". Open `tests.html` the same way to run the tests.
+
 ## How to run the tests
 
 ```bash
