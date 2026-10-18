@@ -19,11 +19,9 @@ Storage keys: `app:data`, `app:settings`.
 
 ## Wireframes
 
-![Wireframes for UI](../assets/wireframes-for-ui.png)
+![Wireframes for UI](wireframes-for-ui.svg)
 
-*These wireframes were drawn by hand and then enhanced with AI. The original pencil sketch is `assets/wireframes-for-ui-hand-drawn.png`; the cleaned-up digital versions (`assets/wireframes-for-ui.png` and `.svg`) show the final layout as built, including a tablet view.*
-
-Original hand-drawn sketch: ![Hand-drawn wireframes for UI](../assets/wireframes-for-ui-hand-drawn.png)
+*These wireframes were drawn by hand and then enhanced with AI.*
 
 Text version:
 

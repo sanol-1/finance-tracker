@@ -22,9 +22,9 @@ An accessible, responsive finance tracker for students, built with plain HTML, C
 
 ## Wireframes
 
-![Wireframes for UI](assets/wireframes-for-ui.png)
+![Wireframes for UI](docs/wireframes-for-ui.svg)
 
-*These wireframes were drawn by hand and then enhanced with AI. The original pencil sketch is `assets/wireframes-for-ui-hand-drawn.png`; the cleaned-up digital versions (`assets/wireframes-for-ui.png` and `.svg`) show the final layout as built, including a tablet view.*
+*These wireframes were drawn by hand and then enhanced with AI.*
 
 ## Regex catalog
 
@@ -127,8 +127,7 @@ styles/styles.css
 scripts/  main.js (wiring)  state.js (data + settings)  storage.js (localStorage, export)
           validators.js (all regex rules)  search.js (safe regex, highlight)
           stats.js (totals, trend, cap)  ui.js (DOM rendering)  theme.js (light/dark)
-docs/M1-spec.md
-assets/wireframes-for-ui.png, .svg, wireframes-for-ui-hand-drawn.png   (UI wireframes)
+docs/M1-spec.md, wireframes-for-ui.svg
 ```
 
 ## Seed data
