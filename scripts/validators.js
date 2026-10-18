@@ -1,28 +1,19 @@
-// validators.js: every regex rule lives here so tests.html and the form share it.
 
 export const PATTERNS = {
-  // No leading/trailing whitespace; at least one character.
   description: /^\S(?:.*\S)?$/,
-  // 0 or a number without leading zeros, optional 1-2 decimals.
   amount: /^(0|[1-9]\d*)(\.\d{1,2})?$/,
-  // YYYY-MM-DD shape (real calendar check is done separately).
   date: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
-  // Letters, with single spaces or hyphens between words.
   category: /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/,
-  // ADVANCED: back-reference catches a repeated word ("the the").
   duplicateWord: /\b(\w+)\s+\1\b/i,
 };
 
-// Collapse runs of spaces/tabs inside the text into one space.
 export const collapseSpaces = (s) => s.replace(/\s{2,}/g, ' ');
 
-// Returns the repeated word (e.g. "the") or null.
 export function findDuplicateWord(s) {
   const m = PATTERNS.duplicateWord.exec(s);
   return m ? m[1] : null;
 }
 
-// Each validator returns an error string, or '' when valid.
 export function validateDescription(value) {
   if (!PATTERNS.description.test(value)) {
     return value.trim() === ''
@@ -58,7 +49,6 @@ export function validateCategory(value) {
     : 'Use letters only, with single spaces or hyphens between words.';
 }
 
-// Validate a whole record; returns { field: message } for invalid fields only.
 export function validateRecord({ description, amount, category, date }) {
   const errors = {
     description: validateDescription(description),
@@ -69,7 +59,6 @@ export function validateRecord({ description, amount, category, date }) {
   return Object.fromEntries(Object.entries(errors).filter(([, msg]) => msg));
 }
 
-// ---------- M6: settings + import validation ----------
 export const CURRENCY = /^[A-Z]{3}$/;
 export const RATE = /^(0|[1-9]\d*)(\.\d{1,6})?$/;
 
@@ -91,7 +80,6 @@ function categoriesError(list) {
   return '';
 }
 
-// values: { baseCurrency, cur2, rate2, cur3, rate3, categories }; returns { inputId: message }
 export function validateSettingsForm(v) {
   const errors = {
     'base-currency': validateCurrency(v.baseCurrency),
@@ -133,7 +121,6 @@ export function validateSettingsObject(s) {
   };
 }
 
-// Returns an error string for one record, or '' when it is well-formed.
 export function validateRecordShape(r) {
   if (!r || typeof r !== 'object' || Array.isArray(r)) return 'is not an object';
   if (typeof r.id !== 'string' || !/^[A-Za-z]+_\d+$/.test(r.id)) return 'has an invalid id';
@@ -148,7 +135,6 @@ export function validateRecordShape(r) {
   return '';
 }
 
-// Accepts a bare array of records or { records, settings }. All-or-nothing.
 export function validateImportData(data) {
   let list = data;
   let settings = null;
