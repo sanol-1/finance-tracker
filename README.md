@@ -20,6 +20,12 @@ An accessible, responsive finance tracker for students, built with plain HTML, C
 - **Stretch:** light/dark theme toggle (remembered).
 - **Responsive:** mobile-first with breakpoints at about 360px (base), 768px and 1024px. Records are cards on phones and a table from 768px.
 
+## Wireframes
+
+![Wireframes for UI](assets/wireframes-for-ui.png)
+
+*These wireframes were drawn by hand and then enhanced with AI. The original pencil sketch is `assets/wireframes-for-ui-hand-drawn.png`; the cleaned-up digital versions (`assets/wireframes-for-ui.png` and `.svg`) show the final layout as built, including a tablet view.*
+
 ## Regex catalog
 
 | Where | Pattern | Valid examples | Invalid examples |
@@ -122,7 +128,7 @@ scripts/  main.js (wiring)  state.js (data + settings)  storage.js (localStorage
           validators.js (all regex rules)  search.js (safe regex, highlight)
           stats.js (totals, trend, cap)  ui.js (DOM rendering)  theme.js (light/dark)
 docs/M1-spec.md
-assets/wireframes.svg, wireframes.png   (UI sketches: mobile, tablet, desktop)
+assets/wireframes-for-ui.png, .svg, wireframes-for-ui-hand-drawn.png   (UI wireframes)
 ```
 
 ## Seed data

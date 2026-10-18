@@ -19,9 +19,13 @@ Storage keys: `app:data`, `app:settings`.
 
 ## Wireframes
 
-Visual sketches for all three breakpoints: ![UI wireframes](../assets/wireframes.png)
+![Wireframes for UI](../assets/wireframes-for-ui.png)
 
-(Vector version: `assets/wireframes.svg`.) Text version:
+*These wireframes were drawn by hand and then enhanced with AI. The original pencil sketch is `assets/wireframes-for-ui-hand-drawn.png`; the cleaned-up digital versions (`assets/wireframes-for-ui.png` and `.svg`) show the final layout as built, including a tablet view.*
+
+Original hand-drawn sketch: ![Hand-drawn wireframes for UI](../assets/wireframes-for-ui-hand-drawn.png)
+
+Text version:
 
 Mobile (360px): single column; records render as stacked cards.
 ```
