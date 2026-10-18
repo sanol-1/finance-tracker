@@ -1,13 +1,12 @@
-/* ---------- Tokens ---------- */
 :root {
   --ink: #16242e;
   --muted: #4a5b66;
   --paper: #f3f6f7;
   --surface: #ffffff;
   --line: #cfd9de;
-  --accent: #0b5d4b;      /* deep green, 7.9:1 on white */
+  --accent: #0b5d4b;      
   --accent-ink: #ffffff;
-  --warn: #8a3b00;        /* over-cap / errors, 7.2:1 on white */
+  --warn: #8a3b00;        
   --focus: #b45f00;
   --flash: #fff3c4;
   --radius: 6px;
@@ -20,7 +19,6 @@
   --line: #2c4049; --accent: #5fd0b3; --accent-ink: #06231c; --warn: #ffb26b; --focus: #ffd08a; --flash: #3d3a14;
 }
 
-/* ---------- Base (mobile first, ~360px) ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); }
 h1, h2 { line-height: 1.2; margin: 0 0 .75rem; }
@@ -52,7 +50,6 @@ main > section { background: var(--surface); border: 1px solid var(--line); bord
 
 .status { min-height: 1.5rem; margin: 0 0 .5rem; font-weight: 600; }
 
-/* Stats */
 .stats { display: grid; grid-template-columns: 1fr; gap: .75rem; margin: 0 0 var(--space); }
 .stat { border-left: 4px solid var(--accent); padding-left: .75rem; }
 .stat dt { color: var(--muted); font-size: .9rem; }
@@ -62,7 +59,6 @@ main > section { background: var(--surface); border: 1px solid var(--line); bord
 .trend { display: flex; align-items: flex-end; gap: .4rem; height: 8rem; border-bottom: 1px solid var(--line); }
 .trend .bar { flex: 1; background: var(--accent); min-height: 2px; border-radius: 3px 3px 0 0; transition: height .4s ease; }
 
-/* Forms */
 .field { display: flex; flex-direction: column; gap: .25rem; margin-bottom: .75rem; }
 label { font-weight: 600; }
 input[type="text"], select {
@@ -87,7 +83,6 @@ legend { font-weight: 700; padding: 0 .4rem; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); }
 .btn.danger { border-color: var(--warn); color: var(--warn); }
 
-/* Records: cards on mobile */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } /* hidden visually, kept for screen readers */
@@ -100,7 +95,6 @@ td.num { font-variant-numeric: tabular-nums; }
 
 .site-footer { padding: var(--space); text-align: center; color: var(--muted); }
 
-/* ---------- Tablet: 768px ---------- */
 @media (min-width: 768px) {
   h1 { font-size: 1.5rem; }
   .site-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
@@ -108,7 +102,6 @@ td.num { font-variant-numeric: tabular-nums; }
   .toolbar { display: grid; grid-template-columns: 2fr auto 1fr; gap: 1rem; align-items: start; }
   #record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
   #record-form .actions { grid-column: 1 / -1; }
-  /* switch cards back to a real table */
   thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
   tbody tr { display: table-row; border: 0; padding: 0; margin: 0; }
   td { display: table-cell; padding: .6rem .5rem; border-bottom: 1px solid var(--line); }
@@ -117,7 +110,6 @@ td.num { font-variant-numeric: tabular-nums; }
   .num { text-align: right; }
 }
 
-/* ---------- Desktop: 1024px ---------- */
 @media (min-width: 1024px) {
   main { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--space); }
   main > section { margin-bottom: 0; }
@@ -133,7 +125,6 @@ td.num { font-variant-numeric: tabular-nums; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
-/* ---------- M4: row actions ---------- */
 .row-actions { gap: .4rem; flex-wrap: wrap; }
 .row-actions .btn { padding: .35rem .75rem; min-height: 2.5rem; }
 @media (min-width: 768px) {
@@ -141,7 +132,6 @@ td.num { font-variant-numeric: tabular-nums; }
   td.row-actions .btn { margin-right: .4rem; }
 }
 
-/* ---------- M5: trend chart ---------- */
 .trend { align-items: stretch; height: 10rem; border-bottom: 0; }
 .trend .day { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .trend .bar-area { flex: 1; display: flex; align-items: flex-end; border-bottom: 1px solid var(--line); }
@@ -149,12 +139,10 @@ td.num { font-variant-numeric: tabular-nums; }
 .trend .val, .trend .lbl { font-size: .75rem; text-align: center; color: var(--muted); min-height: 1rem; }
 .cap:empty { display: none; }
 
-/* ---------- M6 ---------- */
 .muted { color: var(--muted); margin: 0 0 .75rem; }
 #import-file:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
 #alert:empty { display: none; }
 
-/* ---------- M7: inline edit, header, focus ---------- */
 main:focus { outline: none; }
 .site-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .site-header h1 { margin: 0; }
