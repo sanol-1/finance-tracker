@@ -1,16 +1,11 @@
-// ui.js: DOM helpers. (Table rendering and stats are added in later milestones.)
-
 const $ = (id) => document.getElementById(id);
 
-// Announce a message in the global role="status" region.
-// urgent=true uses the assertive role="alert" region (for failures).
 export function announce(message, urgent = false) {
   const polite = $('status');
   const alert = $('alert');
   polite.textContent = '';
   alert.textContent = '';
   const el = urgent ? alert : polite;
-  // Tiny delay so screen readers re-announce identical messages.
   setTimeout(() => { el.textContent = message; }, 30);
 }
 
@@ -32,7 +27,6 @@ export function fillCategories(categories) {
     .join('');
 }
 
-// ---------- M4: rendering ----------
 import { highlight } from './search.js';
 
 export function renderRecords(list, re, flashId = null, editingId = null) {
@@ -59,7 +53,6 @@ function viewRow(r, re, flashId) {
     </tr>`;
 }
 
-// Inline edit: Enter saves, Escape cancels (handled in main.js).
 function editRow(r) {
   const v = escapeAttr;
   return `
@@ -83,8 +76,6 @@ export function setSearchError(message) {
   else $('search').removeAttribute('aria-invalid');
 }
 
-
-// ---------- M5: stats, trend chart, cap ----------
 export function renderStats(stats, days, base = '') {
   $('stat-count').textContent = stats.count;
   $('stat-sum').textContent = `${stats.sum.toFixed(2)} ${base}`.trim();
@@ -99,12 +90,10 @@ export function renderStats(stats, days, base = '') {
       <div class="bar-area"><div class="bar" data-h="${max ? Math.max((d.total / max) * 100, d.total ? 4 : 0) : 0}" style="height:0"></div></div>
       <span class="lbl">${d.label}</span>
     </div>`).join('');
-  // Next frame: set heights so the CSS transition animates the bars growing.
   requestAnimationFrame(() => document.querySelectorAll('#trend .bar')
     .forEach((b) => { b.style.height = b.dataset.h + '%'; }));
 }
 
-// Polite region when under the cap, assertive region when over. Only write on change.
 function setText(id, text) { if ($(id).textContent !== text) $(id).textContent = text; }
 
 export function renderCap(status, base = '') {
@@ -118,7 +107,6 @@ export function renderCap(status, base = '') {
   setText('cap-alert', assertive);
 }
 
-// ---------- M6: conversions ----------
 export function renderConversions(items) {
   $('conv').textContent = items.length
     ? 'Total in other currencies: ' + items.map((i) => `${i.total.toFixed(2)} ${i.code}`).join(' \u00b7 ')
