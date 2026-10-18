@@ -21,7 +21,7 @@ Storage keys: `app:data`, `app:settings`.
 
 ![Wireframes for UI](wireframes-for-ui.svg)
 
-*These wireframes were drawn by hand and then enhanced with AI.*
+This wireframe was drawn by hand and then enhanced with AI.
 
 Text version:
 
