@@ -24,7 +24,7 @@ An accessible, responsive finance tracker for students, built with plain HTML, C
 
 ![Wireframes for UI](docs/wireframes-for-ui.svg)
 
-*These wireframes were drawn by hand and then enhanced with AI.*
+This wireframe was drawn by hand and then enhanced with AI.
 
 ## Regex catalog
 
