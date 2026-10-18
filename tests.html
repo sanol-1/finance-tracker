@@ -37,20 +37,18 @@
     }
     const valid = (msg) => msg === '';
 
-    // Description
     check('description: normal text is valid', valid(validateDescription('Lunch at cafeteria')), true);
     check('description: leading space rejected', valid(validateDescription(' Lunch')), false);
     check('description: trailing space rejected', valid(validateDescription('Lunch ')), false);
     check('description: empty rejected', valid(validateDescription('')), false);
     check('description: single character valid', valid(validateDescription('A')), true);
-    // Advanced: back-reference
+
     check('advanced: finds repeated word', findDuplicateWord('Bought the the book'), 'the');
     check('advanced: repeat is case-insensitive', findDuplicateWord('Tea tea'), 'Tea');
     check('advanced: no repeat returns null', findDuplicateWord('Bus pass'), null);
     check('advanced: repeated word fails validation', valid(validateDescription('Coffee coffee')), false);
     check('collapse: double spaces become one', collapseSpaces('Bus   pass'), 'Bus pass');
 
-    // Amount
     check('amount: 12.50 valid', valid(validateAmount('12.50')), true);
     check('amount: 0 valid', valid(validateAmount('0')), true);
     check('amount: 0.5 valid', valid(validateAmount('0.5')), true);
@@ -60,7 +58,6 @@
     check('amount: letters rejected', valid(validateAmount('12a')), false);
     check('amount: huge number valid', valid(validateAmount('99999999.99')), true);
 
-    // Date
     check('date: 2025-09-29 valid', valid(validateDate('2025-09-29')), true);
     check('date: leap day valid', valid(validateDate('2024-02-29')), true);
     check('date: non-leap Feb 29 rejected', valid(validateDate('2025-02-29')), false);
@@ -68,7 +65,6 @@
     check('date: wrong format rejected', valid(validateDate('29/09/2025')), false);
     check('date: Apr 31 rejected', valid(validateDate('2025-04-31')), false);
 
-    // Category
     check('category: Food valid', valid(validateCategory('Food')), true);
     check('category: two words valid', valid(validateCategory('Study Material')), true);
     check('category: hyphen valid', valid(validateCategory('Part-time')), true);
@@ -76,13 +72,11 @@
     check('category: double space rejected', valid(validateCategory('Study  Material')), false);
     check('category: trailing hyphen rejected', valid(validateCategory('Food-')), false);
 
-    // Whole record
     const good = { description: 'Bus pass', amount: '45.00', category: 'Transport', date: '2025-09-20' };
     check('record: good record has no errors', Object.keys(validateRecord(good)).length, 0);
     check('record: bad record reports each bad field',
       Object.keys(validateRecord({ description: ' x', amount: 'a', category: '1', date: 'z' })).length, 4);
 
-    // Stats
     const sample = [
       { amount: 10, category: 'Food', date: '2025-09-29' },
       { amount: 5.5, category: 'Food', date: '2025-09-29' },
@@ -100,14 +94,12 @@
     check('trend: 25th is inside window with 20', days[2].total, 20);
     check('trend: record before window ignored',
       last7Days([{ amount: 99, category: 'X', date: '2025-09-22' }], new Date(2025, 8, 29)).every((d) => d.total === 0), true);
-    // Cap
     check('cap: none when empty', capStatus(10, null).state, 'none');
     check('cap: under', capStatus(10, 50).amount, 40);
     check('cap: exact', capStatus(50, 50).state, 'exact');
     check('cap: over', capStatus(60.5, 50).amount, 10.5);
     check('cap: float safe', capStatus(0.1 + 0.2, 0.3).state, 'exact');
 
-    // Import / export validation
     const rec = { id: 'txn_0001', description: 'Lunch', amount: 12.5, category: 'Food', date: '2025-09-25',
                   createdAt: '2025-09-25T08:00:00.000Z', updatedAt: '2025-09-25T08:00:00.000Z' };
     check('import: bare array accepted', validateImportData([rec]).ok, true);
@@ -124,7 +116,7 @@
     check('import: missing timestamps rejected', validateRecordShape({ ...rec, createdAt: undefined }) !== '', true);
     check('import: extra fields stripped', 'evil' in validateImportData([{ ...rec, evil: 1 }]).records[0], false);
     check('import: one bad record rejects whole file', validateImportData([rec, { ...rec, id: 'txn_0002', amount: 'x' }]).ok, false);
-    // Settings
+ 
     const goodSettings = { baseCurrency: 'USD', currencies: [{ code: 'EUR', rate: 0.92 }, { code: 'RWF', rate: 1450 }],
                            categories: ['Food', 'Books'], cap: null };
     check('settings: valid object accepted', validateSettingsObject(goodSettings).ok, true);
