@@ -17,7 +17,11 @@
 Settings (stored separately under `app:settings`): `baseCurrency`, `rates` (two others), `cap`, `categories`.
 Storage keys: `app:data`, `app:settings`.
 
-## Wireframes (text sketches)
+## Wireframes
+
+Visual sketches for all three breakpoints: ![UI wireframes](../assets/wireframes.png)
+
+(Vector version: `assets/wireframes.svg`.) Text version:
 
 Mobile (360px): single column; records render as stacked cards.
 ```

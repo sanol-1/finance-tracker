@@ -122,6 +122,7 @@ scripts/  main.js (wiring)  state.js (data + settings)  storage.js (localStorage
           validators.js (all regex rules)  search.js (safe regex, highlight)
           stats.js (totals, trend, cap)  ui.js (DOM rendering)  theme.js (light/dark)
 docs/M1-spec.md
+assets/wireframes.svg, wireframes.png   (UI sketches: mobile, tablet, desktop)
 ```
 
 ## Seed data
