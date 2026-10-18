@@ -4,7 +4,6 @@ An accessible, responsive finance tracker for students, built with plain HTML, C
 
 - **Theme:** Student Finance Tracker
 - **Live site (GitHub Pages):** https://sanol-1.github.io/finance-tracker/
-- **Demo video (unlisted):** ADD_LINK_HERE
 - **Author:** sanol-1, l.mpakasano@alustudent.com
 
 ## Features
